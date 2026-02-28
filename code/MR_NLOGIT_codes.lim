@@ -1,0 +1,890 @@
+reset$
+???Marine Research - Final
+
+?Load and filter the data
+import; file=C:\Users\A02369659\Documents\12-2020\Marine Project\New Data\MR_dataset.csv$
+create;nopt=3$
+sample;all$
+reject; exclall3=1$
+skip$
+dstat;rhs=*$
+
+??Linear Model Results (Tables 3 and 4)
+?RPL
+nlogit;lhs=y;wts=wtgend;pds=4;rpl;
+    choices=one,two,neither;
+    model:
+    u(one)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(two)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(neither)= b0;
+    output=ic;fcn=b0(n),MR(n),Job(n),Carbon(n),Cost(t);WTP=-MR/Cost,-Job/Cost,-Carbon/Cost;halton;pts=1000;parameters;corr$
+wald ;
+    ; fn1 = wtp_b01 = -b1/b5
+    ; fn2 = wtp_mr = -b2/b5
+    ; fn3 = wtp_job = -b3/b5
+    ; fn4 = wtp_carb = -b4/b5
+    ; Pts = 2000$
+?Scenarios WTP (Table 8)
+wald ;
+    ; fn1 = wtp_sc1 = (-(b2*50)-(b3*200)-(b4*100))/b5
+    ; fn2 = wtp_sc2 = (-(b2*25)-(b3*100)-(b4*50))/b5
+    ; fn3 = wtp_sc3 = (-b1)/b5
+    ; fn4 = wtp_sc4 = (-(b2*(-50))-(b3*(-200))-(b4*0))/b5
+    ; Pts = 2000$
+
+?RPL-EC
+nlogit;lhs=y;wts=wtgend;pds=4;rpl;
+    choices=one,two,neither;
+    model:
+    u(one)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(two)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(neither)= b0;
+    output=ic;fcn=b0(n),MR(n),Job(n),Carbon(n),Cost(t);ECM=(one,two);WTP=-MR/Cost,-Job/Cost,-Carbon/Cost;halton;pts=1000;parameters;corr$
+wald ;
+    ; fn1 = wtp_b01 = -b1/b5
+    ; fn2 = wtp_mr = -b2/b5
+    ; fn3 = wtp_job = -b3/b5
+    ; fn4 = wtp_carb = -b4/b5
+    ; Pts = 2000$
+?Scenarios WTP (Table 8)
+wald ;
+    ; fn1 = wtp_sc1 = (-(b2*50)-(b3*200)-(b4*100))/b5
+    ; fn2 = wtp_sc2 = (-(b2*25)-(b3*100)-(b4*50))/b5
+    ; fn3 = wtp_sc3 = (-b1)/b5
+    ; fn4 = wtp_sc4 = (-(b2*(-50))-(b3*(-200))-(b4*0))/b5
+    ; Pts = 2000$
+
+?RPL-EC WTP-Space
+nlrplogit;lhs=y;	
+    choices=one,two,neither;	
+    labels=b,w1,w2,w3,a;start=-60,3.5,1,3,-0.003;	
+    Fn1=u1=a*(-w1*MR-w2*Job-w3*Carbon+Cost);	
+    Fn2=u2=a*(-w1*MR-w2*Job-w3*Carbon+Cost);	
+    Fn3=u3=a*(-b);	
+    Model:	
+    U(one)=u1/	
+    U(two)=u2/	
+    U(neither)=u3;	
+    fcn=b(n),w1(n),w2(n),w3(n),a(t,1);halton;pts=1000;pds=4;parameters;Output=IC;ECM=(one,two);Parameters$
+?Scenarios WTP (Tables 8)
+wald ;
+    ; fn1 = wtp_sc1= (b2*50)+(b3*200)+(b4*100)
+    ; fn2 = wtp_sc2 = (b2*25)+(b3*100)+(b4*50)
+    ; fn3 = wtp_sc3 = b1
+    ; fn4= wtp_sc4 = (b2*(-50))+(b3*(-200))+(b4*0)
+    ; Pts = 2000$
+?Attribute intensive Scenarios (Table J)
+wald ;
+    ; fn1 = carbint= (b2*25)+(b3*100)+(b4*100)
+    ; fn2 = mrint = (b2*50)+(b3*100)+(b4*50)
+    ; fn3 = jobint = (b2*50)+(b3*100)+(b4*50)
+    ; Pts = 2000$
+
+	
+?GMXL WTP-Space
+GMXLOGIT;lhs=y;
+    choices=one,two,neither;
+    Par;halton;pts=1000;pds=4;Output=IC;wts=wtgend; Tau=0.5;
+    ; Fcn = b0(n),MR(n),Job(n),Carbon(n), Cost(*o);
+    model:
+    U(one)=b0 + MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    U(two)=b0 + MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    U(neither)=MR*MR + Job*Job + Carbon*Carbon + Cost*cost$	
+?Scenarios WTP (Tables 8)
+wald ;
+    ; fn1 = wtp_sc1= (-b2*50)+(-b3*200)+(-b4*100)
+    ; fn2 = wtp_sc2 = (-b2*25)+(-b3*100)+(-b4*50)
+    ; fn3 = wtp_sc3 = b1
+    ; fn4= wtp_sc4 = (-b2*(-50))+(-b3*(-200))+(-b4*0)
+    ; Pts = 2000$
+
+
+??Non-Linear Model Results (Tables 5 and 6)
+create; if(mr=-50)mr1=1$
+create; if(mr=50)mr3=1$
+create; if(job=-200)job1=1$
+create; if(job=200)job3=1$
+create; if(carbon=25)carb2=1$
+create; if(carbon=50)carb3=1$
+create; if(carbon=100)carb4=1$
+?RPL
+nlogit;lhs=y;wts=wtgend;pds=4;rpl;
+    choices=one,two,neither;
+    model:
+    U(one)=b0 + mr1*mr1+ mr3*mr3 + job1*job1+ job3*job3 + carb2*carb2 + carb3*carb3 + carb4*carb4 + Cost*Cost/
+    U(two)=b0 + mr1*mr1+ mr3*mr3 + job1*job1+ job3*job3 + carb2*carb2 + carb3*carb3 + carb4*carb4 + Cost*Cost/
+    U(neither)=mr1*mr1+ mr3*mr3 + job1*job1+ job3*job3 + carb2*carb2 + carb3*carb3 + carb4*carb4 + Cost*Cost;
+    output=ic; Fcn =b0(n), mr1(n),mr3(n),job1(n), job3(n), carb2(n) ,carb3(n),carb4(n), Cost(t);halton;pts=1000;parameters;corr$
+wald ;
+    ; fn1 = wtp_b01 = -b1/b9
+    ; fn2 = wtp_mr1 = -b2/b9
+    ; fn3 = wtp_mr3 = -b3/b9
+    ; fn4 = wtp_job1 = -b4/b9
+    ; fn5 = wtp_job3 = -b5/b9
+    ; fn6 = wtp_carb2 = -b6/b9
+    ; fn7 = wtp_carb3 = -b6/b9
+    ; fn8 = wtp_carb4 = -b6/b9
+    ; Pts = 2000$
+?RPL-EC
+nlogit;lhs=y;wts=wtgend;pds=4;rpl;
+    choices=one,two,neither;
+    model:
+    U(one)=b0 + mr1*mr1+ mr3*mr3 + job1*job1+ job3*job3 + carb2*carb2 + carb3*carb3 + carb4*carb4 + Cost*Cost/
+    U(two)=b0 + mr1*mr1+ mr3*mr3 + job1*job1+ job3*job3 + carb2*carb2 + carb3*carb3 + carb4*carb4 + Cost*Cost/
+    U(neither)=mr1*mr1+ mr3*mr3 + job1*job1+ job3*job3 + carb2*carb2 + carb3*carb3 + carb4*carb4 + Cost*Cost;
+    output=ic; Fcn =b0(n), mr1(n),mr3(n),job1(n), job3(n), carb2(n) ,carb3(n),carb4(n), Cost(t);ECM=(one,two);halton;pts=1000;parameters;corr$
+?wald ;
+    ; fn1 = wtp_b01 = -b1/b9
+    ; fn2 = wtp_mr1 = -b2/b9
+    ; fn3 = wtp_mr3 = -b3/b9
+    ; fn4 = wtp_job1 = -b4/b9
+    ; fn5 = wtp_job3 = -b5/b9
+    ; fn6 = wtp_c2 = -b6/b9
+    ; fn7 = wtp_c3 = -b7/b9
+    ; fn8 = wtp_c4 = -b8/b9
+    ; Pts = 2000$
+?RPL-EC WTP-Space
+nlrplogit;lhs=y;
+    choices=one,two,neither;
+    labels=b,w1,w2,w3,w4,w5,w6,w7,a;start=-100,-164,146,-136,116,25,50,100,-0.006;
+    Fn1=u1=a*(-w1*mr1-w2*mr3-w3*job1-w4*job3-w5*carb2-w6*carb3-w7*carb4+Cost);
+    Fn2=u2=a*(-w1*mr1-w2*mr3-w3*job1-w4*job3-w5*carb2-w6*carb3-w7*carb4+Cost);
+    Fn3=u3=a*(-b);
+    Model:
+    U(one)=u1/
+    U(two)=u2/
+    U(neither)=u3;
+    fcn=b(n),w1(n),w2(n),w3(n),w4(n),w5(n),w6(n),w7(n),a(t,1);halton;pts=1000;pds=4;parameters;ECM=(one,two);Output=IC$
+
+??Linear Model Results with interactions (Tables 7)
+create; mrjob=mr*job$
+create; mrcarb=mr*carbon$
+create; mrcost=mr*cost$
+create; jobcarb=job*carbon$
+create; jobcost=job*cost$
+create; carbcost=carbon*cost$
+?RPL
+nlogit;lhs=y;wts=wtgend;
+    choices=one,two,neither;pds=4;rpl
+    ;model:
+    u(one)= b0 + MR*MR + Job*Job + Carbon*Carbon + Cost*Cost + mrjob*mrjob + mrcarb*mrcarb + mrcost*mrcost +jobcarb*jobcarb + jobcost*jobcost +carbcost*carbcost+erc1/
+    u(two)= b0 + MR*MR + Job*Job + Carbon*Carbon + Cost*Cost + mrjob*mrjob + mrcarb*mrcarb + mrcost*mrcost +jobcarb*jobcarb + jobcost*jobcost +carbcost*carbcost+erc1/
+    u(neither)= MR*MR + Job*Job + Carbon*Carbon + Cost*Cost + mrjob*mrjob + mrcarb*mrcarb + mrcost*mrcost +jobcarb*jobcarb + jobcost*jobcost +carbcost*carbcost;
+    output=ic;fcn=b0(n),MR(n),Job(n),Carbon(n),Cost(o);halton;pts=1000;parameters$
+?RPL-EC
+nlogit;lhs=y;wts=wtgend;
+    choices=one,two,neither;pds=4;rpl
+    ;model:
+    u(one)= b0 + MR*MR + Job*Job + Carbon*Carbon + Cost*Cost + mrjob*mrjob + mrcarb*mrcarb + mrcost*mrcost +jobcarb*jobcarb + jobcost*jobcost +carbcost*carbcost+erc1/
+    u(two)= b0 + MR*MR + Job*Job + Carbon*Carbon + Cost*Cost + mrjob*mrjob + mrcarb*mrcarb + mrcost*mrcost +jobcarb*jobcarb + jobcost*jobcost +carbcost*carbcost+erc1/
+    u(neither)= MR*MR + Job*Job + Carbon*Carbon + Cost*Cost + mrjob*mrjob + mrcarb*mrcarb + mrcost*mrcost +jobcarb*jobcarb + jobcost*jobcost +carbcost*carbcost;
+    output=ic;fcn=b0(n),MR(n),Job(n),Carbon(n),Cost(o),erc1(n,*,0);halton;pts=1000;parameters$
+
+??Linear Model by subsamples - fish (Table 9)
+?Fishers
+reject; RECF_D#1$
+?RPL-EC WTP-Space correlated
+nlrplogit;lhs=y;
+    choices=one,two,neither;
+    labels=b,w1,w2,w3,a;start=-60,3.5,1,3,-0.003;
+    Fn1=u1=a*(-w1*MR-w2*Job-w3*Carbon+Cost);
+    Fn2=u2=a*(-w1*MR-w2*Job-w3*Carbon+Cost);
+    Fn3=u3=a*(-b);
+    Model:
+    U(one)=u1/
+    U(two)=u2/
+    U(neither)=u3;
+ fcn=b(n),w1(n),w2(n),w3(n),a(t,1);halton;pts=1000;pds=4;parameters;ECM=(one,two);Output=IC;corr$
+?RPL-EC WTP-Space no-correlated
+nlrplogit;lhs=y;
+    choices=one,two,neither;
+    labels=b,w1,w2,w3,a;start=-60,3.5,1,3,-0.003;
+    Fn1=u1=a*(-w1*MR-w2*Job-w3*Carbon+Cost);
+    Fn2=u2=a*(-w1*MR-w2*Job-w3*Carbon+Cost);
+    Fn3=u3=a*(-b);
+    Model:
+    U(one)=u1/
+    U(two)=u2/
+    U(neither)=u3;
+    fcn=b(n),w1(n),w2(n),w3(n),a(t,1);halton;pts=1000;pds=4;parameters;ECM=(one,two);Output=IC$
+?Utility Space (Tables A and B)
+?RPL
+nlogit;lhs=y;wts=wtgend;pds=4;rpl;
+    choices=one,two,neither;
+    model:
+    u(one)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(two)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(neither)= b0;
+wald ;
+    ; fn1 = wtp_b01 = -b1/b5
+    ; fn2 = wtp_mr = -b2/b5
+    ; fn3 = wtp_job = -b3/b5
+    ; fn4 = wtp_carb = -b4/b5
+    ; Pts = 2000$
+?RPL-EC
+nlogit;lhs=y;wts=wtgend;pds=4;rpl;
+    choices=one,two,neither;
+    model:
+    u(one)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(two)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(neither)= b0;
+    output=ic;fcn=b0(n),MR(n),Job(n),Carbon(n),Cost(t,1);halton;pts=1000;parameters;ECM=(one,two);WTP=-b0 / Cost,-MR/Cost,-Job/Cost,-Carbon/Cost$
+wald ;
+    ; fn1 = wtp_b01 = -b1/b5
+    ; fn2 = wtp_mr = -b2/b5
+    ; fn3 = wtp_job = -b3/b5
+    ; fn4 = wtp_carb = -b4/b5
+    ; Pts = 2000$
+
+sample;all$
+reject; exclall3=1$
+?Non-Fishers
+reject; RECF_D#0$
+?RPL-EC WTP-Space correlated
+nlrplogit;lhs=y;
+    choices=one,two,neither;
+    labels=b,w1,w2,w3,a;start=-60,3.5,1,3,-0.003;
+    Fn1=u1=a*(-w1*MR-w2*Job-w3*Carbon+Cost);
+    Fn2=u2=a*(-w1*MR-w2*Job-w3*Carbon+Cost);
+    Fn3=u3=a*(-b);
+    Model:
+    U(one)=u1/
+    U(two)=u2/
+    U(neither)=u3;
+    fcn=b(n),w1(n),w2(n),w3(n),a(t,1);halton;pts=1000;pds=4;parameters;ECM=(one,two);Output=IC;corr$
+?RPL-EC WTP-Space no-correlated
+nlrplogit;lhs=y;
+    choices=one,two,neither;
+    labels=b,w1,w2,w3,a;start=-60,3.5,1,3,-0.003;
+    Fn1=u1=a*(-w1*MR-w2*Job-w3*Carbon+Cost);
+    Fn2=u2=a*(-w1*MR-w2*Job-w3*Carbon+Cost);
+    Fn3=u3=a*(-b);
+    Model:
+    U(one)=u1/
+    U(two)=u2/
+    U(neither)=u3;
+    fcn=b(n),w1(n),w2(n),w3(n),a(t,1);halton;pts=1000;pds=4;parameters;ECM=(one,two);Output=IC$
+?Utility Space (Tables A and B)
+?RPL
+nlogit;lhs=y;wts=wtgend;pds=4;rpl;
+    choices=one,two,neither;
+    model:
+    u(one)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(two)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(neither)= b0;
+wald ;
+    ; fn1 = wtp_b01 = -b1/b5
+    ; fn2 = wtp_mr = -b2/b5
+    ; fn3 = wtp_job = -b3/b5
+    ; fn4 = wtp_carb = -b4/b5
+    ; Pts = 2000$
+?RPL-EC
+nlogit;lhs=y;wts=wtgend;pds=4;rpl;
+    choices=one,two,neither;
+    model:
+    u(one)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(two)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(neither)= b0;
+    output=ic;fcn=b0(n),MR(n),Job(n),Carbon(n),Cost(t,1);halton;pts=1000;parameters;ECM=(one,two);WTP=-b0 / Cost,-MR/Cost,-Job/Cost,-Carbon/Cost$
+wald ;
+    ; fn1 = wtp_b01 = -b1/b5
+    ; fn2 = wtp_mr = -b2/b5
+    ; fn3 = wtp_job = -b3/b5
+    ; fn4 = wtp_carb = -b4/b5
+    ; Pts = 2000$
+
+
+??Linear Model by subsamples - general recreation (Table 10)
+sample;all$
+reject; exclall3=1$
+?Recreators
+reject; REC_D#1$
+?RPL-EC WTP-Space correlated
+nlrplogit;lhs=y;
+    choices=one,two,neither;
+    labels=b,w1,w2,w3,a;start=-60,3.5,1,3,-0.003;
+    Fn1=u1=a*(-w1*MR-w2*Job-w3*Carbon+Cost);
+    Fn2=u2=a*(-w1*MR-w2*Job-w3*Carbon+Cost);
+    Fn3=u3=a*(-b);
+    Model:
+    U(one)=u1/
+    U(two)=u2/
+    U(neither)=u3;
+    fcn=b(n),w1(n),w2(n),w3(n),a(t,1);halton;pts=1000;pds=4;parameters;ECM=(one,two);Output=IC;corr$
+?RPL-EC WTP-Space no-correlated
+nlrplogit;lhs=y;
+    choices=one,two,neither;
+    labels=b,w1,w2,w3,a;start=-60,3.5,1,3,-0.003;
+    Fn1=u1=a*(-w1*MR-w2*Job-w3*Carbon+Cost);
+    Fn2=u2=a*(-w1*MR-w2*Job-w3*Carbon+Cost);
+    Fn3=u3=a*(-b);
+    Model:
+    U(one)=u1/
+    U(two)=u2/
+    U(neither)=u3;
+    fcn=b(n),w1(n),w2(n),w3(n),a(t,1);halton;pts=1000;pds=4;parameters;ECM=(one,two);Output=IC$
+?Utility Space (Tables C and D)
+?RPL
+nlogit;lhs=y;wts=wtgend;pds=4;rpl;
+    choices=one,two,neither;
+    model:
+    u(one)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(two)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(neither)= b0;
+wald ;
+    ; fn1 = wtp_b01 = -b1/b5
+    ; fn2 = wtp_mr = -b2/b5
+    ; fn3 = wtp_job = -b3/b5
+    ; fn4 = wtp_carb = -b4/b5
+    ; Pts = 2000$
+?RPL-EC
+nlogit;lhs=y;wts=wtgend;pds=4;rpl;
+    choices=one,two,neither;
+    model:
+    u(one)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(two)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(neither)= b0;
+    output=ic;fcn=b0(n),MR(n),Job(n),Carbon(n),Cost(t,1);halton;pts=1000;parameters;ECM=(one,two);WTP=-b0 / Cost,-MR/Cost,-Job/Cost,-Carbon/Cost$
+wald ;
+    ; fn1 = wtp_b01 = -b1/b5
+    ; fn2 = wtp_mr = -b2/b5
+    ; fn3 = wtp_job = -b3/b5
+    ; fn4 = wtp_carb = -b4/b5
+    ; Pts = 2000$
+
+?Non-Recreators
+sample;all$
+reject; exclall3=1$
+reject; REC_D#0$
+?RPL-EC WTP-Space correlated
+nlrplogit;lhs=y;
+    choices=one,two,neither;
+    labels=b,w1,w2,w3,a;start=-60,3.5,1,3,-0.003;
+    Fn1=u1=a*(-w1*MR-w2*Job-w3*Carbon+Cost);
+    Fn2=u2=a*(-w1*MR-w2*Job-w3*Carbon+Cost);
+    Fn3=u3=a*(-b);
+    Model:
+    U(one)=u1/
+    U(two)=u2/
+    U(neither)=u3;
+    fcn=b(n),w1(n),w2(n),w3(n),a(t,1);halton;pts=1000;pds=4;parameters;ECM=(one,two);Output=IC;corr$
+?RPL-EC WTP-Space no-correlated
+nlrplogit;lhs=y;
+    choices=one,two,neither;
+    labels=b,w1,w2,w3,a;start=-60,3.5,1,3,-0.003;
+    Fn1=u1=a*(-w1*MR-w2*Job-w3*Carbon+Cost);
+    Fn2=u2=a*(-w1*MR-w2*Job-w3*Carbon+Cost);
+    Fn3=u3=a*(-b);
+    Model:
+    U(one)=u1/
+    U(two)=u2/
+    U(neither)=u3;
+    fcn=b(n),w1(n),w2(n),w3(n),a(t,1);halton;pts=1000;pds=4;parameters;ECM=(one,two);Output=IC$
+?Utility Space (Tables C and D)
+?RPL
+nlogit;lhs=y;wts=wtgend;pds=4;rpl;
+    choices=one,two,neither;
+    model:
+    u(one)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(two)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(neither)= b0;
+wald ;
+    ; fn1 = wtp_b01 = -b1/b5
+    ; fn2 = wtp_mr = -b2/b5
+    ; fn3 = wtp_job = -b3/b5
+    ; fn4 = wtp_carb = -b4/b5
+    ; Pts = 2000$
+?RPL-EC
+nlogit;lhs=y;wts=wtgend;pds=4;rpl;
+    choices=one,two,neither;
+    model:
+    u(one)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(two)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(neither)= b0;
+    output=ic;fcn=b0(n),MR(n),Job(n),Carbon(n),Cost(t,1);halton;pts=1000;parameters;ECM=(one,two);WTP=-b0 / Cost,-MR/Cost,-Job/Cost,-Carbon/Cost$
+wald ;
+    ; fn1 = wtp_b01 = -b1/b5
+    ; fn2 = wtp_mr = -b2/b5
+    ; fn3 = wtp_job = -b3/b5
+    ; fn4 = wtp_carb = -b4/b5
+    ; Pts = 2000$
+
+??Linear Model controlling for choice uncertainty (Table H and I)
+sample;all$
+reject; exclall3=1$
+?RPL
+nlogit;lhs=yadj;wts=wtgend;pds=4;rpl;
+    choices=one,two,neither;
+    model:
+    u(one)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(two)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(neither)= b0;
+    output=ic;fcn=b0(n),MR(n),Job(n),Carbon(n),Cost(t);halton;pts=1000;parameters;corr$
+wald ;
+    ; fn1 = wtp_b01 = -b1/b5
+    ; fn2 = wtp_mr = -b2/b5
+    ; fn3 = wtp_job = -b3/b5
+    ; fn4 = wtp_carb = -b4/b5
+    ; fn5 = wtp_sc1 = (-(b2*50)-(b3*100)-(b4*50))/b5
+    ; Pts = 2000$
+?RPL-EC
+nlogit;lhs=yadj;wts=wtgend;pds=4;rpl;
+    choices=one,two,neither;
+    model:
+    u(one)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(two)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(neither)= b0;
+    output=ic;fcn=b0(n),MR(n),Job(n),Carbon(n),Cost(t);ECM=(one,two);halton;pts=1000;parameters;corr$
+wald ;
+    ; fn1 = wtp_b01 = -b1/b5
+    ; fn2 = wtp_mr = -b2/b5
+    ; fn3 = wtp_job = -b3/b5
+    ; fn4 = wtp_carb = -b4/b5
+    ; fn5 = wtp_sc1 = (-(b2*50)-(b3*100)-(b4*50))/b5
+    ; Pts = 2000$
+?RPL-EC WTP-Space
+nlrplogit;lhs=yadj;
+    choices=one,two,neither; maxit=200;
+    labels=b,w1,w2,w3,a;start=-100,3.5,1,3,-0.003;
+    Fn1=u1=a*(-w1*MR-w2*Job-w3*Carbon+Cost);
+    Fn2=u2=a*(-w1*MR-w2*Job-w3*Carbon+Cost);
+    Fn3=u3=a*(-b);
+    Model:
+    U(one)=u1/
+    U(two)=u2/
+    U(neither)=u3;
+    fcn=b(n),w1(n),w2(n),w3(n),a(t,1);halton;pts=1000;pds=4;parameters;ECM=(one,two);Output=IC$
+?GMXL
+GMXLOGIT;lhs=yadj;
+    choices=one,two,neither;
+    Par;halton;pts=1000;pds=4;Output=IC;wts=wtgend; Tau=0.5;
+    ; Fcn = b0(n),MR(n),Job(n),Carbon(n), Cost(*o);
+    model:
+    U(one)=MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    U(two)=MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    U(neither)=b0$
+
+??RPL Linear Model Results with Fisherman's Interactions by Subsamples Related to General Recreation (Table N)
+?General Recreation
+nlogit;lhs=y;wts=wtgend;
+    choices=one,two,neither;pds=4;rpl
+    ;model:
+    u(one)= b0 + MR*MR + Job*Job + Carbon*Carbon + Cost*Cost + b0fish*b0fish + mrfish*mrfish + jobfish*jobfish +carbfish*carbfish /
+    u(two)= b0 + MR*MR + Job*Job + Carbon*Carbon + Cost*Cost + b0fish*b0fish + mrfish*mrfish + jobfish*jobfish +carbfish*carbfish /
+    u(neither)= MR*MR + Job*Job + Carbon*Carbon + Cost*Cost + b0fish*b0fish + mrfish*mrfish + jobfish*jobfish +carbfish*carbfish;
+output=ic;fcn=b0(n),MR(n),Job(n),Carbon(n),Cost(n);halton;pts=1000;parameters; WTP=-b0/Cost,-MR/Cost,-Job/Cost,-Carbon/Cost$
+?No-general Recreation
+nlogit;lhs=y;wts=wtgend;
+    choices=one,two,neither;pds=4;rpl
+    ;model:
+    u(one)= b0 + MR*MR + Job*Job + Carbon*Carbon + Cost*Cost + b0fish*b0fish + mrfish*mrfish + jobfish*jobfish +carbfish*carbfish /
+    u(two)= b0 + MR*MR + Job*Job + Carbon*Carbon + Cost*Cost + b0fish*b0fish + mrfish*mrfish + jobfish*jobfish +carbfish*carbfish /
+    u(neither)= MR*MR + Job*Job + Carbon*Carbon + Cost*Cost + b0fish*b0fish + mrfish*mrfish + jobfish*jobfish +carbfish*carbfish;
+    output=ic;fcn=b0(n),MR(n),Job(n),Carbon(n),Cost(n);halton;pts=1000;parameters; WTP=-b0/Cost,-MR/Cost,-Job/Cost,-Carbon/Cost$
+
+?? MNL Parsimonious Linear Model Results by Subsamples (table E and F)
+?No-Fish Recreation but General Recreation
+sample;all$
+reject; exclall3=1$
+reject; REC_D#1$
+reject; RECF_D=1$
+dstat;rhs=*
+nlogit;lhs=y;wts=wtgend;pds=4;
+    choices=one,two,neither; WTP=-b0 / Cost,-MR/Cost,-Job/Cost,-Carbon/Cost;
+    model:
+    u(one)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(two)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(neither)= b0$
+wald ;
+    ; fn1 = wtp_mr = -b1/b4
+    ; fn2 = wtp_job = -b2/b4
+    ; fn3 = wtp_carb = -b3/b4
+    ; fn4 = wtp_b0 = -b5/b4
+    ; Pts = 2000$
+?No-Fish Recreation and No-General Recreation
+sample;all$
+reject; exclall3=1$
+reject; REC_D=1$
+reject; RECF_D=1$
+nlogit;lhs=y;wts=wtgend;pds=4;
+    choices=one,two,neither; WTP=-b0 / Cost,-MR/Cost,-Job/Cost,-Carbon/Cost;
+    model:
+    u(one)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(two)= MR*MR + Job*Job + Carbon*Carbon + Cost*cost/
+    u(neither)= b0$
+wald ;
+    ; fn1 = wtp_mr = -b1/b4
+    ; fn2 = wtp_job = -b2/b4
+    ; fn3 = wtp_carb = -b3/b4
+    ; fn4 = wtp_b0 = -b5/b4
+    ; Pts = 2000$
+
+
+/*Latent Class Model (Standard Model with 3 classes, Fixed parameters) */
+
+create; if(CE_cert>50)certain1=1$
+create; if(Age=3|Age=4)age2s=1$
+create; if(Age=5|Age=6)age3s=1$
+create; if(Educ=3|Educ=4)educ2s=1$
+create; if(Educ=5)educ3s=1$
+create; if(Educ=6)educ4s=1$
+create; if(Inc=3|Inc=4)inc2s=1$
+create; if(Inc=5|Inc=6)inc3s=1$
+create; if(Inc=7)inc4s=1$
+create; if(Latino=1)latino1=1$
+create; if(Gender=1)gender1=1$
+create; if(Gender=2)gender2=1$
+create; if(Emp=1)emp1=1$
+create; if(Emp=2)emp2=1$
+create; if(Emp=3)emp3=1$
+create; if(Emp=4)emp4=1$
+create; if(Emp=5)emp5=1$
+create; if(Emp=6)emp6=1$
+create; if(Reside=4 | Reside=5)urban=1$
+create; if(Bias=2)bias2=1$
+
+
+calc;ran(1)$
+sample;all$
+?reject; Str_clsc=1$
+?reject; protest=6$
+reject; exclall3=1$
+skip
+create; p1,p2,p3$
+namelist; pc=p1,p2,p3$ ?Nlogit Ref Guide, pg. 461
+lclogit;lhs=y ?lcrplogit results suggest that coeffs are not random.
+;choices=one,two,neither
+?;rhs=mr,job,carbon,cost
+?;shuffle 
+?;halton
+?;maxit=40 ?; tlg=0.000001  
+?;rpl
+?;show
+?;mlhs
+?;fcn=MR(n),Job(n),Carbon(n),Cost(t) ? wierd result when cost is distributed lognormal (even when minus sign is included and when Halton draws are used).?triangular with just t is different than t,1.
+;pts= 3 ? # of classes (note that specification in Nlogit ref guide page N-459 does not work here.
+;pds=4
+;wts=wtgend
+;lcm ? = inc2s,inc3s,inc4s,educ2s,educ3s,educ4s,age2s,age3s
+?;par (together with matrix?) store conditional parameter estimates (Hensher et al., pages 646-647)
+?;matrix
+;model:
+u(one)= b01 + MR*MR + Job*Job + Carbon*Carbon + Cost*Cost/
+u(two)= b01 + MR*MR + Job*Job + Carbon*Carbon + Cost*Cost/
+u(neither)= 0;output=ic
+;par;classp=pc ?Nlogit Ref Guide page N-462
+;rst=
+?restricts ASC to be same across all classes:
+b1ab01,b2amr,b3ajob,b4acarbon,b5acost,
+b1ab01,b2bmr,b3bjob,b4bcarbon,b5bcost,
+b1ab01,b2cmr,b3cjob,b4ccarbon,b5ccost$
+
+
+? WTP K&R
+
+wald; 
+    
+    ; fn1 = wtp_mr = -b2/b5
+    ; fn2 = wtp_job = -b3/b5
+    ; fn3 = wtp_carb = -b4/b5
+    ; fn4 = wtp_mr = -b7/b10
+    ; fn5 = wtp_job = -b8/b10
+    ; fn6 = wtp_carb = -b9/b10
+    ; fn7 = wtp_mr = -b12/b15
+    ; fn8 = wtp_job = -b13/b15
+    ; fn9 = wtp_carb = -b14/b15$
+
+
+    ?; K&R;pts=1000$ ? Obtains singular covariance matrix 
+
+
+/* Latent Class Model (Fixed parameters, ANA) Hensher pg.725-726 - checking for non-attendance in cost parameter a la Ando
+
+
+Timer$
+calc;ran(1)$
+sample;all$
+?reject; Str_clsc=1$
+?reject; protest=6$
+reject; exclall3=1$
+skip
+create; p1,p2$
+namelist; pc=p1,p2$ ?Nlogit Ref Guide, pg. 461
+lclogit;lhs=y ?lcrplogit results suggest that coeffs are not random.
+;choices=one,two,neither
+?;rhs=mr,job,carbon,cost
+?;shuffle 
+?;halton
+?;maxit=40 ?; tlg=0.000001  
+?;rpl
+?;show
+?;mlhs
+?;fcn=MR(n),Job(n),Carbon(n),Cost(t) ? wierd result when cost is distributed lognormal (even when minus sign is included and when Halton draws are used).?triangular with just t is different than t,1.
+;pts= 2 ? # of classes (note that specification in Nlogit ref guide page N-459 does not work here.
+;pds=4
+;wts=wtgend
+;lcm ?= inc2s,inc3s,inc4s ?educ2s,educ3s,educ4s,age2s,age3s
+?;par (together with matrix?) store conditional parameter estimates (Hensher et al., pages 646-647)
+?;wtp=mr/cost,job/cost,carbon/cost
+?;matrix
+;model:
+u(one)= b01 + MR*MR + Job*Job + Carbon*Carbon + Cost*Cost/
+u(two)= b01 + MR*MR + Job*Job + Carbon*Carbon + Cost*Cost/
+u(neither)= 0;output=ic
+?;par;wtp=mr/cost;classp=pc
+;rst=
+?ANA1:
+b1ab01,b2amr,b3ajob,b4acarbon,b5acost,
+?ANA2:
+b1ab01,b2amr,b3ajob,b4acarbon,0$
+
+/*
+?ANA1:
+b1ab01,0,b3ajob,b4acarbon,b5acost,
+?ANA2:
+b1ab01,b2bmr,0,b4bcarbon,b5bcost$
+*/
+
+? WTP K&R
+
+wald; 
+    
+    ; fn1 = wtp_mr = -b2/b5
+    ; fn2 = wtp_job = -b3/b5
+    ; fn3 = wtp_carb = -b4/b5$
+
+
+
+/* Latent Class Model (Fixed parameters, ACMA) Hensher pg.726 
+
+
+Timer$
+calc;ran(1)$
+sample;all$
+?reject; Str_clsc=1$
+?reject; protest=6$
+reject; exclall3=1$
+skip
+create; p1,p2$
+namelist; pc=p1,p2$ ?Nlogit Ref Guide, pg. 461
+lclogit;lhs=y ?lcrplogit results suggest that coeffs are not random.
+;choices=one,two,neither
+?;rhs=mr,job,carbon,cost
+?;shuffle 
+?;halton
+?;maxit=40 ?; tlg=0.000001  
+?;rpl
+?;show
+?;mlhs
+?;fcn=MR(n),Job(n),Carbon(n),Cost(t) ? wierd result when cost is distributed lognormal (even when minus sign is included and when Halton draws are used).?triangular with just t is different than t,1.
+;pts= 2 ? # of classes (note that specification in Nlogit ref guide page N-459 does not work here.
+;pds=4
+;wts=wtgend
+;lcm ?= inc2s,inc3s,inc4s ?educ2s,educ3s,educ4s,age2s,age3s
+?;par (together with matrix?) store conditional parameter estimates (Hensher et al., pages 646-647)
+?;wtp=mr/cost,job/cost,carbon/cost
+?;matrix
+;model:
+u(one)= opt1 + MR*MR + Job*Job + Carbon*Carbon + Cost*Cost/
+u(two)= MR*MR + Job*Job + Carbon*Carbon + Cost*Cost/
+u(neither)= 0;output=ic
+;par;wtp=mr/cost;classp=pc
+;rst=
+?ACMA:
+b1aopt1,b2amr,b2amr,b4acarbon,b5acost,
+b1bopt1,b2bmr,b3bjob,b3bjob,b5bcost$
+
+/* ex post stated ANA - ML-EC model*/
+create; if(CE_eval2=6|CE_eval2=7)ana=1$
+create; anamr=ana*mr$
+create; anajob=ana*job$
+create; anacarb=ana*carbon$
+create; anacost=ana*cost$ 
+calc;ran(1)$
+sample;all$
+reject; exclall3=1$
+skip
+nlogit;lhs=y;wts=wtgend;pds=4;rpl;
+choices=one,two,neither;
+model:
+u(one)=mr*mr+anamr*anamr+job*job+anajob*anajob+carbon*carbon+anacarb*anacarb+cost*cost+anacost*anacost/
+u(two)=mr*mr+anamr*anamr+job*job+anajob*anajob+carbon*carbon+anacarb*anacarb+cost*cost+anacost*anacost/
+u(neither)=b0;
+output=ic;fcn=b0(n),mr(n),job(n),carbon(n),cost(t);ecm=(one,two);halton;pts=1000;parameter$
+
+wald; 
+    ; fn1 = wtp_mr = -b2/b5
+    ; fn2 = wtp_job = -b3/b5
+    ; fn3 = wtp_carb = -b4/b5
+    ; fn4 = wtp_b0 = -b1/b5
+    ; fn5 = wtp_amr = -b6/(b5+b9)
+    ; fn6 = wtp_ajob = -b7/(b5+b9)
+    ; fn7 = wtp_acrb = -b8/(b5+b9)$
+
+
+/* ex post stated ANA - ML model*/
+create; if(CE_eval2=6|CE_eval2=7)ana=1$
+dstat; rhs=ana$
+create; anamr=ana*mr$
+create; anajob=ana*job$
+create; anacarb=ana*carbon$
+create; anacost=ana*cost$ 
+?create; anab0=ana*b0$
+calc;ran(1)$
+sample;all$
+reject; exclall3=1$
+skip
+nlogit;lhs=y;wts=wtgend;pds=4;rpl;
+choices=one,two,neither;
+model:
+u(one)=mr*mr+anamr*anamr+job*job+anajob*anajob+carbon*carbon+anacarb*anacarb+cost*cost+anacost*anacost/
+u(two)=mr*mr+anamr*anamr+job*job+anajob*anajob+carbon*carbon+anacarb*anacarb+cost*cost+anacost*anacost/
+u(neither)=b0;
+output=ic;fcn=b0(n),mr(n),job(n),carbon(n),cost(t);halton;pts=1000;parameter$
+
+wald; 
+    ; fn1 = wtp_mr = -b2/b5
+    ; fn2 = wtp_job = -b3/b5
+    ; fn3 = wtp_carb = -b4/b5
+    ; fn4 = wtp_b0 = -b1/b5
+    ; fn5 = wtp_amr = -b6/(b5+b9)
+    ; fn6 = wtp_ajob = -b7/(b5+b9)
+    ; fn7 = wtp_acrb = -b8/(b5+b9)$
+
+/* ex post implied ANA model */
+
+calc;ran(1)$
+sample;all$
+reject; exclall3=1$
+skip$
+lclogit;lhs=y;wts=wtgend;pds=4;lcm;pts=3;output=ic;
+choices=one,two,neither;
+model:
+u(one)=b0+mr*mr+job*job+carbon*carbon+cost*cost/
+u(two)=b0+mr*mr+job*job+carbon*carbon+cost*cost/
+u(neither)=mr*mr+job*job+carbon*carbon+cost*cost$
+
+wald; 
+    ; fn1 = wtp_mr = -b2/b5
+    ; fn2 = wtp_job = -b3/b5
+    ; fn3 = wtp_carb = -b4/b5
+    ; fn4 = wtp_b0 = -b1/b5$
+
+
+calc;ran(1)$
+sample;all$
+reject; exclall3=1$
+skip$
+lclogit;lhs=y;wts=wtgend;pds=4;lcm;pts=3;output=ic;
+choices=one,two,neither;
+model:
+u(one)=b0+mr*mr+job*job+carbon*carbon+cost*cost/
+u(two)=b0+mr*mr+job*job+carbon*carbon+cost*cost/
+u(neither)=mr*mr+job*job+carbon*carbon+cost*cost;
+rst=b1,b2,b3,b4,b5,
+0,b2,b3,b4,b5,
+?b1,0,b3,b4,b5,
+?b1,b2,0,b4,b5,
+?b1,b2,b3,0,b5,
+b1,b2,b3,b4,0$
+
+wald; 
+    ; fn1 = wtp_mr = -b2/b5
+    ; fn2 = wtp_job = -b3/b5
+    ; fn3 = wtp_carb = -b4/b5
+    ; fn4 = wtp_b0 = -b1/b5$
+
+/* Vuong test for non-nested models (Hensher pgs. 327-330) *\ ?run with other models
+
+? Negative Vuong statistic favors second model (ANA)
+
+
+calc;ran(1)$
+sample;all$
+?reject; Str_clsc=1$
+?reject; protest=6$
+reject; exclall3=1$
+skip
+rplogit;lhs=y
+;choices=one,two,neither
+;shuffle 
+?;halton
+;maxit=50  
+?;rpl
+?;show
+?;mlhs
+;fcn=MR(n),Job(n),Carbon(n),Cost(t,1) 
+;pts=50 
+;pds=4
+;wts=wtgend
+?;par (together with matrix?) store conditional parameter estimates (Hensher et al., pages 646-647)
+?;matrix
+;model:
+u(one)= b01 + MR*MR + Job*Job + Carbon*Carbon + Cost*Cost/
+u(two)= b01 + MR*MR + Job*Job + Carbon*Carbon + Cost*Cost/
+u(neither)= 0$
+create; llmnln=logl_obs$
+
+
+calc;ran(1)$
+sample;all$
+reject; exclall3=1$
+skip$
+lclogit;lhs=y;wts=wtgend;pds=4;lcm;pts=3;output=ic;
+choices=one,two,neither;
+model:
+u(one)=b0+mr*mr+job*job+carbon*carbon+cost*cost/
+u(two)=b0+mr*mr+job*job+carbon*carbon+cost*cost/
+u(neither)=mr*mr+job*job+carbon*carbon+cost*cost;
+rst=b1,b2,b3,b4,b5,
+0,b2,b3,b4,b5,
+?b1,0,b3,b4,b5,
+?b1,b2,0,b4,b5,
+?b1,b2,b3,0,b5,
+b1,b2,b3,b4,0$
+create; llrrm=logl_obs$
+create; dll=llmnln-llrrm$
+calc; for[choice=1];list;tst(dll,0)$
+
+/*LR test */
+
+calc;ran(1)$
+sample;all$
+reject; exclall3=1$
+skip$
+lclogit;lhs=y;wts=wtgend;pds=4;lcm;pts=3;output=ic;
+choices=one,two,neither;
+model:
+u(one)=b0+mr*mr+job*job+carbon*carbon+cost*cost/
+u(two)=b0+mr*mr+job*job+carbon*carbon+cost*cost/
+u(neither)=mr*mr+job*job+carbon*carbon+cost*cost$
+calc; llmnl = logl$
+
+
+calc;ran(1)$
+sample;all$
+reject; exclall3=1$
+skip$
+lclogit;lhs=y;wts=wtgend;pds=4;lcm;pts=3;output=ic;
+choices=one,two,neither;
+model:
+u(one)=b0+mr*mr+job*job+carbon*carbon+cost*cost/
+u(two)=b0+mr*mr+job*job+carbon*carbon+cost*cost/
+u(neither)=mr*mr+job*job+carbon*carbon+cost*cost;
+rst=b1,b2,b3,b4,b5,
+0,b2,b3,b4,b5,
+?b1,0,b3,b4,b5,
+?b1,b2,0,b4,b5,
+?b1,b2,b3,0,b5,
+b1,b2,b3,b4,0$
+
+?Capture unrestricted log likelihood
+calc; llml = logl$
+
+?LRTest
+calc; list; LRTest = 2*(llml-llmnl) ; Ctb(0.95,2) $ 
+? can also use CALC ; List ; chisq = 2*(llml - llmnl ); 1 - Chi(chisq, 2) $ ?2 is degrees of freedom
+
+
+
+

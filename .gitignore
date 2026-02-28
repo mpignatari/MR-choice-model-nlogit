@@ -1,0 +1,16 @@
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Private / large data (do not commit)
+data/
+*.csv
+*.xlsx
+*.sav
+*.dta
+*.rds
+
+# Output
+output/
+*.log
+*.tmp
